@@ -8,11 +8,12 @@ from torch.utils.data import Dataset
 
 from feeders import tools
 
+import json
 
 class Feeder(Dataset):
     def __init__(self, data_path, label_path,
                  random_choose=False, random_shift=False, random_move=False,
-                 window_size=-1, normalization=False, debug=False, use_mmap=True):
+                 window_size=-1, normalization=False, debug=False, use_mmap=False):
         """
         :param data_path:
         :param label_path:
@@ -40,19 +41,23 @@ class Feeder(Dataset):
 
     def load_data(self):
         # data: N C V T M
-        try:
-            with open(self.label_path) as f:
-                self.sample_name, self.label = pickle.load(f)
-        except:
-            # for pickle file from python2
-            with open(self.label_path, 'rb') as f:
-                self.sample_name, self.label = pickle.load(f, encoding='latin1')
+        # try:
+        #     with open(self.label_path) as f:
+        #         self.sample_name, self.label = pickle.load(f)
+        # except:
+        #     # for pickle file from python2
+        #     with open(self.label_path, 'rb') as f:
+        #         self.sample_name, self.label = pickle.load(f, encoding='latin1')
+
+        f = open(self.label_path)
+        self.label = json.load(f)
+
 
         # load data
         if self.use_mmap:
             self.data = np.load(self.data_path, mmap_mode='r')
         else:
-            self.data = np.load(self.data_path)
+            self.data = np.load(self.data_path, allow_pickle=True)
         if self.debug:
             self.label = self.label[0:100]
             self.data = self.data[0:100]
@@ -120,13 +125,14 @@ def test(data_path, label_path, vid=None, graph=None, is_3d=False):
         num_workers=2)
 
     if vid is not None:
-        sample_name = loader.dataset.sample_name
-        sample_id = [name.split('.')[0] for name in sample_name]
-        index = sample_id.index(vid)
-        data, label, index = loader.dataset[index]
-        data = data.reshape((1,) + data.shape)
+        # sample_name = loader.dataset.sample_name
+        # sample_id = [name.split('.')[0] for name in sample_name]
+        # index = sample_id.index(vid)
+        # data, label, index = loader.dataset[index]
+        # data = data.reshape((1,) + data.shape)
 
         # for batch_idx, (data, label) in enumerate(loader):
+        data = loader.dataset[0]
         N, C, T, V, M = data.shape
 
         plt.ion()
@@ -187,10 +193,16 @@ def test(data_path, label_path, vid=None, graph=None, is_3d=False):
 if __name__ == '__main__':
     import os
     os.environ['DISPLAY'] = 'localhost:10.0'
-    data_path = "../data/ntu/xview/val_data_joint.npy"
-    label_path = "../data/ntu/xview/val_label.pkl"
-    # data_path = "../data/robot/X_gobal_data.npy"
-    # label_path = "../data/robot/Y_gobal_data.json"
+
+    data_path_ntu = "../data/ntu/xview/val_data_joint.npy"
+    label_path_ntu = "../data/ntu/xview/val_label.pkl"
+    data_ntu = np.load(data_path_ntu, allow_pickle=True)
+    with open(label_path_ntu, 'rb') as f_ntu:
+        # unique_label = pickle.load(f_ntu)
+        sample_name_ntu, label_path_ntu = pickle.load(f_ntu)
+
+    data_path = "../data/robot/X_gobal_data.npy"
+    label_path = "../data/robot/Y_gobal_data.json"
     graph = 'graph.ntu_rgb_d.Graph'
     test(data_path, label_path, vid='S001C001P003R001A001', graph=graph, is_3d=True)
 
