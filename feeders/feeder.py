@@ -69,6 +69,46 @@ class Feeder(Dataset):
         self.mean_map = data.mean(axis=2, keepdims=True).mean(axis=4, keepdims=True).mean(axis=0)
         self.std_map = data.transpose((0, 2, 4, 1, 3)).reshape((N * T * M, C * V)).std(axis=0).reshape((C, 1, V, 1))
 
+    def align_frames(self, data):
+        MAX_FRAME = 300
+        count_overcome_max_frame = 0
+        aligned = True
+
+        # for action_idx, action_item in enumerate(data):
+        for clip_idx, clip_item in enumerate(data):
+            data[clip_idx] = np.array(clip_item)
+            num_frame = data[clip_idx].shape[0]
+            if num_frame > MAX_FRAME:
+                count_overcome_max_frame = count_overcome_max_frame + 1
+                # print("action_idx: {}, clip_idx: {}, size > 300".format(action_idx, clip_idx))
+                data[clip_idx] = data[clip_idx][0:MAX_FRAME]
+                continue
+            elif MAX_FRAME % num_frame == 0:
+                num_repeat = int(MAX_FRAME / num_frame)
+                data[clip_idx] = np.tile(data[clip_idx], (num_repeat, 1, 1))
+            elif int(MAX_FRAME / num_frame) == 1:
+                # e.g. 226
+                data[clip_idx] = np.vstack(
+                    (data[clip_idx], data[clip_idx][0:MAX_FRAME - num_frame]))
+            else:
+                # e.g. 17
+                num_repeat = int(MAX_FRAME / num_frame)
+                padding = MAX_FRAME % num_frame
+                data[clip_idx] = np.tile(data[clip_idx], (num_repeat, 1, 1))
+                data[clip_idx] = np.vstack(
+                    (data[clip_idx], data[clip_idx][0:padding]))
+
+            if data[clip_idx].shape != (300, 17, 2):
+                aligned = False
+                print("clip_idx: {} is not correct aligned with {}".format(clip_idx, MAX_FRAME))
+
+        if aligned == True:
+            print("All the clips are aligned with size")
+        else:
+            print("There are some clips with shape incorrect")
+
+        return np.array(data)
+
     def __len__(self):
         return len(self.label)
 
@@ -76,9 +116,10 @@ class Feeder(Dataset):
         return self
 
     def __getitem__(self, index):
-        data_numpy = self.data[index]
+        data = self.data[index]
         label = self.label[index]
-        data_numpy = np.array(data_numpy)
+        #data_numpy = np.array(data_numpy)
+        data_numpy = self.align_frames(data)
 
         if self.normalization:
             data_numpy = (data_numpy - self.mean_map) / self.std_map
@@ -133,7 +174,11 @@ def test(data_path, label_path, vid=None, graph=None, is_3d=False):
 
         # for batch_idx, (data, label) in enumerate(loader):
         data = loader.dataset[0]
-        N, C, T, V, M = data.shape
+        data = list(data)
+        N, T, V, C = data[0].shape
+        M = 1
+
+        data[0] = data[0].reshape(N, C, T, V)
 
         plt.ion()
         fig = plt.figure()
@@ -178,13 +223,15 @@ def test(data_path, label_path, vid=None, graph=None, is_3d=False):
             for t in range(T):
                 for m in range(M):
                     for i, (v1, v2) in enumerate(edge):
-                        x1 = data[0, :2, t, v1, m]
-                        x2 = data[0, :2, t, v2, m]
+                        # x1 = data[0, :2, t, v1, m]
+                        # x2 = data[0, :2, t, v2, m]
+                        x1 = data[0][0, :2, t, v1]
+                        x2 = data[0][0, :2, t, v2]
                         if (x1.sum() != 0 and x2.sum() != 0) or v1 == 1 or v2 == 1:
-                            pose[m][i].set_xdata(data[0, 0, t, [v1, v2], m])
-                            pose[m][i].set_ydata(data[0, 1, t, [v1, v2], m])
+                            pose[m][i].set_xdata(data[0][0, 0, t, [v1, v2]])
+                            pose[m][i].set_ydata(data[0][0, 1, t, [v1, v2]])
                             if is_3d:
-                                pose[m][i].set_3d_properties(data[0, 2, t, [v1, v2], m])
+                                pose[m][i].set_3d_properties(data[0][0, 2, t, [v1, v2]])
                 fig.canvas.draw()
                 # plt.savefig('/home/lshi/Desktop/skeleton_sequence/' + str(t) + '.jpg')
                 plt.pause(0.01)
@@ -204,7 +251,7 @@ if __name__ == '__main__':
     data_path = "../data/robot/X_gobal_data.npy"
     label_path = "../data/robot/Y_gobal_data.json"
     graph = 'graph.ntu_rgb_d.Graph'
-    test(data_path, label_path, vid='S001C001P003R001A001', graph=graph, is_3d=True)
+    test(data_path, label_path, vid='S001C001P003R001A001', graph=graph, is_3d=False)
 
     # data_path = "../data/kinetics/val_data.npy"
     # label_path = "../data/kinetics/val_label.pkl"
