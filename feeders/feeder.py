@@ -9,6 +9,7 @@ from torch.utils.data import Dataset
 from feeders import tools
 
 import json
+import matplotlib.pyplot as plt
 
 class Feeder(Dataset):
     def __init__(self, data_path, label_path,
@@ -118,8 +119,8 @@ class Feeder(Dataset):
     def __getitem__(self, index):
         data = self.data[index]
         label = self.label[index]
-        #data_numpy = np.array(data_numpy)
         data_numpy = self.align_frames(data)
+        # data_numpy = data
 
         if self.normalization:
             data_numpy = (data_numpy - self.mean_map) / self.std_map
@@ -158,7 +159,6 @@ def test(data_path, label_path, vid=None, graph=None, is_3d=False):
     :param is_3d: when vis NTU, set it True
     :return:
     '''
-    import matplotlib.pyplot as plt
     loader = torch.utils.data.DataLoader(
         dataset=Feeder(data_path, label_path),
         batch_size=64,
@@ -174,68 +174,166 @@ def test(data_path, label_path, vid=None, graph=None, is_3d=False):
 
         # for batch_idx, (data, label) in enumerate(loader):
         data = loader.dataset[0]
+
+        # TEST
+        # plot_pose(data, 4)
+
+        # ORIG
         data = list(data)
         N, T, V, C = data[0].shape
         M = 1
 
-        data[0] = data[0].reshape(N, C, T, V)
+        # DON'T work 'reshape'
+        # data[0] = data[0].reshape(N, C, T, V)
+        data[0] = data[0].transpose(0, 3, 1, 2)
+        # Plot figure use my function
+        plot_pose(data, 0)
 
-        plt.ion()
-        fig = plt.figure()
-        if is_3d:
-            from mpl_toolkits.mplot3d import Axes3D
-            ax = fig.add_subplot(111, projection='3d')
-        else:
-            ax = fig.add_subplot(111)
+        # plt.ion()
+        # fig = plt.figure()
+        # if is_3d:
+        #     from mpl_toolkits.mplot3d import Axes3D
+        #     ax = fig.add_subplot(111, projection='3d')
+        # else:
+        #     ax = fig.add_subplot(111)
+        #
+        # if graph is None:
+        #     p_type = ['b.', 'g.', 'r.', 'c.', 'm.', 'y.', 'k.', 'k.', 'k.', 'k.']
+        #     pose = [
+        #         ax.plot(np.zeros(V), np.zeros(V), p_type[m])[0] for m in range(M)
+        #     ]
+        #     ax.axis([-1, 1, -1, 1])
+        #     for t in range(T):
+        #         for m in range(M):
+        #             pose[m].set_xdata(data[0, 0, t, :, m])
+        #             pose[m].set_ydata(data[0, 1, t, :, m])
+        #         fig.canvas.draw()
+        #         plt.pause(0.001)
+        # else:
+        #     p_type = ['b-', 'g-', 'r-', 'c-', 'm-', 'y-', 'k-', 'k-', 'k-', 'k-']
+        #     import sys
+        #     from os import path
+        #     sys.path.append(
+        #         path.dirname(path.dirname(path.dirname(path.abspath(__file__)))))
+        #     G = import_class(graph)()
+        #     edge = G.inward
+        #     pose = []
+        #     for m in range(M):
+        #         a = []
+        #         for i in range(len(edge)):
+        #             if is_3d:
+        #                 a.append(ax.plot(np.zeros(3), np.zeros(3), p_type[m])[0])
+        #             else:
+        #                 a.append(ax.plot(np.zeros(2), np.zeros(2), p_type[m])[0])
+        #         pose.append(a)
+        #     # ax.axis([-1, 1, -1, 1])
+        #     ax.axis([0, 1000, 0, 1000])
+        #     if is_3d:
+        #         ax.set_zlim3d(-1, 1)
+        #     for t in range(T):
+        #         for m in range(M):
+        #             for i, (v1, v2) in enumerate(edge):
+        #                 # x1 = data[0, :2, t, v1, m]
+        #                 # x2 = data[0, :2, t, v2, m]
+        #                 x1 = data[0][0, :2, t, v1]
+        #                 x2 = data[0][0, :2, t, v2]
+        #                 # if (x1.sum() != 0 and x2.sum() != 0) or v1 == 1 or v2 == 1:
+        #                 if (x1[0] * x1[1] * x2[0] * x2[1] != 0) and (x1[0] > 0 and  x1[1] > 0 and  x2[0] > 0 and x2[1] > 0):
+        #                     pose[m][i].set_xdata(data[0][0, 0, t, [v1, v2]])
+        #                     pose[m][i].set_ydata(data[0][0, 1, t, [v1, v2]])
+        #                     # fig.canvas.draw()
+        #                     # plt.savefig('/home/hao/project_2021_2/MS-G3D-Eval/imgs/robot/' + str(t) + '.jpg')
+        #                     # plt.pause(0.01)
+        #                     if is_3d:
+        #                         pose[m][i].set_3d_properties(data[0][0, 2, t, [v1, v2]])
+        #             # plt.axis('equal')
+        #             fig.canvas.draw()
+        #             plt.savefig('/home/hao/project_2021_2/MS-G3D-Eval/imgs/robot/' + str(t) + '.jpg')
+        #             fig.canvas.flush_events()
+        #             plt.pause(0.01)
+        # else:
+        #     plot_pose(data, 4)
 
-        if graph is None:
-            p_type = ['b.', 'g.', 'r.', 'c.', 'm.', 'y.', 'k.', 'k.', 'k.', 'k.']
-            pose = [
-                ax.plot(np.zeros(V), np.zeros(V), p_type[m])[0] for m in range(M)
-            ]
-            ax.axis([-1, 1, -1, 1])
-            for t in range(T):
-                for m in range(M):
-                    pose[m].set_xdata(data[0, 0, t, :, m])
-                    pose[m].set_ydata(data[0, 1, t, :, m])
-                fig.canvas.draw()
-                plt.pause(0.001)
-        else:
-            p_type = ['b-', 'g-', 'r-', 'c-', 'm-', 'y-', 'k-', 'k-', 'k-', 'k-']
-            import sys
-            from os import path
-            sys.path.append(
-                path.dirname(path.dirname(path.dirname(path.abspath(__file__)))))
-            G = import_class(graph)()
-            edge = G.inward
-            pose = []
-            for m in range(M):
-                a = []
-                for i in range(len(edge)):
-                    if is_3d:
-                        a.append(ax.plot(np.zeros(3), np.zeros(3), p_type[m])[0])
-                    else:
-                        a.append(ax.plot(np.zeros(2), np.zeros(2), p_type[m])[0])
-                pose.append(a)
-            ax.axis([-1, 1, -1, 1])
-            if is_3d:
-                ax.set_zlim3d(-1, 1)
-            for t in range(T):
-                for m in range(M):
-                    for i, (v1, v2) in enumerate(edge):
-                        # x1 = data[0, :2, t, v1, m]
-                        # x2 = data[0, :2, t, v2, m]
-                        x1 = data[0][0, :2, t, v1]
-                        x2 = data[0][0, :2, t, v2]
-                        if (x1.sum() != 0 and x2.sum() != 0) or v1 == 1 or v2 == 1:
-                            pose[m][i].set_xdata(data[0][0, 0, t, [v1, v2]])
-                            pose[m][i].set_ydata(data[0][0, 1, t, [v1, v2]])
-                            if is_3d:
-                                pose[m][i].set_3d_properties(data[0][0, 2, t, [v1, v2]])
-                fig.canvas.draw()
-                # plt.savefig('/home/lshi/Desktop/skeleton_sequence/' + str(t) + '.jpg')
-                plt.pause(0.01)
+def draw_line(x1, y1, x2, y2):
+    # Use original Image coordinate system
+    if x1 > 0 and y1 > 0 and x2 > 0 and y2 > 0:
+        plt.plot([x1, x2], [y1, y2])
 
+def draw_pose(x_raw, y_raw):
+    draw_line(x_raw[15], y_raw[15], x_raw[13], y_raw[13])
+    draw_line(x_raw[13], y_raw[13], x_raw[11], y_raw[11])
+    draw_line(x_raw[16], y_raw[16], x_raw[14], y_raw[14])
+    draw_line(x_raw[14], y_raw[14], x_raw[12], y_raw[12])
+    draw_line(x_raw[11], y_raw[11], x_raw[12], y_raw[12])
+    draw_line(x_raw[5], y_raw[5], x_raw[11], y_raw[11])
+    draw_line(x_raw[6], y_raw[6], x_raw[12], y_raw[12])
+    draw_line(x_raw[5], y_raw[5], x_raw[6], y_raw[6])
+    draw_line(x_raw[5], y_raw[5], x_raw[7], y_raw[7])
+    draw_line(x_raw[6], y_raw[6], x_raw[8], y_raw[8])
+    draw_line(x_raw[7], y_raw[7], x_raw[9], y_raw[9])
+    draw_line(x_raw[8], y_raw[8], x_raw[10], y_raw[10])
+    draw_line(x_raw[1], y_raw[1], x_raw[2], y_raw[2])
+    draw_line(x_raw[0], y_raw[0], x_raw[1], y_raw[1])
+    draw_line(x_raw[0], y_raw[0], x_raw[2], y_raw[2])
+    draw_line(x_raw[1], y_raw[1], x_raw[3], y_raw[3])
+    draw_line(x_raw[2], y_raw[2], x_raw[4], y_raw[4])
+    draw_line(x_raw[3], y_raw[3], x_raw[5], y_raw[5])
+    draw_line(x_raw[4], y_raw[4], x_raw[6], y_raw[6])
+
+
+def plot_pose(data, num_clip):
+
+    plt.clf()
+    plt.cla()
+    plt.close()
+
+    fig = plt.figure()
+
+    for i in range(data[0][num_clip].shape[1]):
+    # for i, _ in enumerate(data[0][num_clip]):
+        # orig from Hao
+        # x_raw = data[0][num_clip][i][:, 0]
+        # y_raw = data[0][num_clip][i][:, 1]
+
+        #test
+        x_raw = data[0][num_clip][0][i]
+        y_raw = data[0][num_clip][1][i]
+        chosen_points = (x_raw > 0) & (y_raw > 0)
+        x = x_raw[chosen_points]
+        y = y_raw[chosen_points]
+        label = data[1]['action']
+
+        # Method 1: add '-' to y value to convert into negative values
+        # fig = plt.figure()
+        # ax = fig.add_subplot(1, 1, 1)
+        # ax.scatter(x, -y)
+        # draw_pose(x_raw, -y_raw)
+        # plt.title(label)
+        # # preserve aspect ratio of the plot
+        # plt.axis('equal')
+        # plt.show(block=False)
+
+        # Method 2: invert Y axis
+        ax = plt.gca()  # get the axis
+        ax.set_ylim(ax.get_ylim()[::-1])  # invert the axis
+        ax.xaxis.tick_top()  # and move the X-Axis
+        ax.yaxis.tick_left()  # remove right y-Ticks
+        plt.scatter(x, y)
+        draw_pose(x_raw, y_raw)
+        plt.title(label + "   Frame: " + str(i))
+
+        # auto-adjust axis x-y scale
+        plt.axis('equal')
+
+        # Show in pycharm
+        # plt.show(block=False)
+
+        # Store pictures into directory
+        # figname = 'fig_{}.png'.format(i)
+        # dest = os.path.join('picture', figname)
+        # plt.savefig(dest)  # write image to file
+        plt.savefig('/home/hao/project_2021_2/MS-G3D-Eval/imgs/robot/' + str(i) + '.jpg')
+        plt.clf()
 
 if __name__ == '__main__':
     import os
@@ -257,17 +355,6 @@ if __name__ == '__main__':
     # label_path = "../data/kinetics/val_label.pkl"
     # graph = 'graph.Kinetics'
     # test(data_path, label_path, vid='UOD7oll3Kqo', graph=graph)
-
-
-
-
-
-
-
-
-
-
-
 
 
 
