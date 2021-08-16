@@ -59,6 +59,8 @@ class Feeder(Dataset):
             self.data = np.load(self.data_path, mmap_mode='r')
         else:
             self.data = np.load(self.data_path, allow_pickle=True)
+            for i in range(self.data.size):
+                self.align_frames(self.data[i])
         if self.debug:
             self.label = self.label[0:100]
             self.data = self.data[0:100]
@@ -189,6 +191,7 @@ def test(data_path, label_path, vid=None, graph=None, is_3d=False):
         # Plot figure use my function
         plot_pose(data, 0)
 
+        # Don'use author's method to plot
         # plt.ion()
         # fig = plt.figure()
         # if is_3d:
@@ -346,8 +349,8 @@ if __name__ == '__main__':
         # unique_label = pickle.load(f_ntu)
         sample_name_ntu, label_path_ntu = pickle.load(f_ntu)
 
-    data_path = "../data/robot/X_gobal_data.npy"
-    label_path = "../data/robot/Y_gobal_data.json"
+    data_path = "../data/robot/X_global_data.npy"
+    label_path = "../data/robot/Y_global_data.json"
     graph = 'graph.ntu_rgb_d.Graph'
     test(data_path, label_path, vid='S001C001P003R001A001', graph=graph, is_3d=False)
 
