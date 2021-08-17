@@ -390,18 +390,22 @@ class Processor():
             self.data_loader['train'] = torch.utils.data.DataLoader(
                 dataset=Feeder(**self.arg.train_feeder_args),
                 batch_size=self.arg.batch_size,
-                shuffle=True,
+                # shuffle=True,
+                shuffle=False,
                 num_workers=self.arg.num_worker,
                 drop_last=True,
-                worker_init_fn=worker_seed_fn)
+                worker_init_fn=worker_seed_fn
+                )
 
         self.data_loader['test'] = torch.utils.data.DataLoader(
             dataset=Feeder(**self.arg.test_feeder_args),
             batch_size=self.arg.test_batch_size,
             shuffle=False,
             num_workers=self.arg.num_worker,
-            drop_last=False,
-            worker_init_fn=worker_seed_fn)
+            # drop_last=False,
+            drop_last=True,
+            worker_init_fn=worker_seed_fn,
+            )
 
     def save_arg(self):
         # save arg
@@ -476,7 +480,7 @@ class Processor():
             # get data
             with torch.no_grad():
                 data = data.float().cuda(self.output_device)
-                label = label.long().cuda(self.output_device)
+                #label = label.long().cuda(self.output_device)
             timer['dataloader'] += self.split_time()
 
             # backward

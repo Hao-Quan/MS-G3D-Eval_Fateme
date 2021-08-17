@@ -41,6 +41,8 @@ class Feeder(Dataset):
             self.get_mean_map()
 
     def load_data(self):
+
+        # NTU DATASET
         # data: N C V T M
         # try:
         #     with open(self.label_path) as f:
@@ -50,17 +52,18 @@ class Feeder(Dataset):
         #     with open(self.label_path, 'rb') as f:
         #         self.sample_name, self.label = pickle.load(f, encoding='latin1')
 
+        # robot dataset
         f = open(self.label_path)
         self.label = json.load(f)
-
 
         # load data
         if self.use_mmap:
             self.data = np.load(self.data_path, mmap_mode='r')
         else:
             self.data = np.load(self.data_path, allow_pickle=True)
-            for i in range(self.data.size):
-                self.align_frames(self.data[i])
+
+            # for i in range(self.data.size):
+            #     self.align_frames(self.data[i])
         if self.debug:
             self.label = self.label[0:100]
             self.data = self.data[0:100]
@@ -121,8 +124,8 @@ class Feeder(Dataset):
     def __getitem__(self, index):
         data = self.data[index]
         label = self.label[index]
-        data_numpy = self.align_frames(data)
-        # data_numpy = data
+        # data_numpy = self.align_frames(data)
+        data_numpy = data
 
         if self.normalization:
             data_numpy = (data_numpy - self.mean_map) / self.std_map
@@ -187,7 +190,7 @@ def test(data_path, label_path, vid=None, graph=None, is_3d=False):
 
         # DON'T work 'reshape'
         # data[0] = data[0].reshape(N, C, T, V)
-        data[0] = data[0].transpose(0, 3, 1, 2)
+        # data[0] = data[0].transpose(0, 3, 1, 2)
         # Plot figure use my function
         plot_pose(data, 0)
 
