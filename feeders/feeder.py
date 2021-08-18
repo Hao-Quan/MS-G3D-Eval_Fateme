@@ -62,8 +62,12 @@ class Feeder(Dataset):
         else:
             self.data = np.load(self.data_path, allow_pickle=True)
 
-            # for i in range(self.data.size):
-            #     self.align_frames(self.data[i])
+        expanded_label = []
+        for _, item in enumerate(self.label):
+            for i in range(len(item['id_person'])):
+                expanded_label.append(item['id_action'])
+        self.label = expanded_label
+
         if self.debug:
             self.label = self.label[0:100]
             self.data = self.data[0:100]
@@ -345,12 +349,12 @@ if __name__ == '__main__':
     import os
     os.environ['DISPLAY'] = 'localhost:10.0'
 
-    data_path_ntu = "../data/ntu/xview/val_data_joint.npy"
-    label_path_ntu = "../data/ntu/xview/val_label.pkl"
-    data_ntu = np.load(data_path_ntu, allow_pickle=True)
-    with open(label_path_ntu, 'rb') as f_ntu:
-        # unique_label = pickle.load(f_ntu)
-        sample_name_ntu, label_path_ntu = pickle.load(f_ntu)
+    # data_path_ntu = "../data/ntu/xview/val_data_joint.npy"
+    # label_path_ntu = "../data/ntu/xview/val_label.pkl"
+    # data_ntu = np.load(data_path_ntu, allow_pickle=True)
+    # with open(label_path_ntu, 'rb') as f_ntu:
+    #     # unique_label = pickle.load(f_ntu)
+    #     sample_name_ntu, label_path_ntu = pickle.load(f_ntu)
 
     data_path = "../data/robot/X_global_data.npy"
     label_path = "../data/robot/Y_global_data.json"

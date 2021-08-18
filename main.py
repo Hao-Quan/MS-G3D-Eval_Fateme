@@ -404,7 +404,7 @@ class Processor():
             num_workers=self.arg.num_worker,
             # drop_last=False,
             drop_last=True,
-            worker_init_fn=worker_seed_fn,
+            worker_init_fn=worker_seed_fn
             )
 
     def save_arg(self):
@@ -480,7 +480,7 @@ class Processor():
             # get data
             with torch.no_grad():
                 data = data.float().cuda(self.output_device)
-                #label = label.long().cuda(self.output_device)
+                label = label.long().cuda(self.output_device)
             timer['dataloader'] += self.split_time()
 
             # backward
