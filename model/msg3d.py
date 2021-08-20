@@ -184,7 +184,8 @@ if __name__ == "__main__":
     sys.path.append('..')
 
     model = Model(
-        num_class=60,
+        # num_class=60,
+        num_class=55,
         num_point=25,
         num_person=2,
         num_gcn_scales=13,
@@ -192,7 +193,8 @@ if __name__ == "__main__":
         graph='graph.ntu_rgb_d.AdjMatrixGraph'
     )
 
-    N, C, T, V, M = 6, 3, 50, 25, 2
+    # N, C, T, V, M = 6, 3, 50, 25, 2
+    N, C, T, V, M = 6, 2, 50, 25, 2
     x = torch.randn(N,C,T,V,M)
     model.forward(x)
 

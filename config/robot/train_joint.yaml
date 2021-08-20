@@ -14,7 +14,7 @@ train_feeder_args:
 #  data_path: ./data/robot/X_format_NCTVM.npy
 #  label_path: ./data/robot/Y_global_data.json
 
-  debug: False
+  debug: True
   random_choose: False
   random_shift: False
   random_move: False
@@ -35,7 +35,7 @@ test_feeder_args:
 # model
 model: model.msg3d.Model
 model_args:
-  num_class: 60
+  num_class: 55
   num_point: 17
   num_person: 1
   num_gcn_scales: 13    # `num_scales` == `K + 1` in the paper
@@ -48,10 +48,11 @@ base_lr: 0.05
 step: [30, 40]
 
 # training
-num_epoch: 50
+#num_epoch: 50
+num_epoch: 1
 device: [0]
-batch_size: 2
+batch_size: 4
 forward_batch_size: 2
-test_batch_size: 2
+test_batch_size: 4
 nesterov: True
 

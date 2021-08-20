@@ -16,7 +16,7 @@ import numpy as np
 import torch.nn as nn
 import torch.optim as optim
 from tqdm import tqdm
-# from tensorboardX import SummaryWriter
+from tensorboardX import SummaryWriter
 from torch.optim.lr_scheduler import MultiStepLR
 # import apex
 
@@ -241,11 +241,10 @@ class Processor():
                     else:
                         print('Dir not removed:', logdir)
 
-                # self.train_writer = SummaryWriter(os.path.join(logdir, 'train'), 'train')
-                # self.val_writer = SummaryWriter(os.path.join(logdir, 'val'), 'val')
+                self.train_writer = SummaryWriter(os.path.join(logdir, 'train'), 'train')
+                self.val_writer = SummaryWriter(os.path.join(logdir, 'val'), 'val')
             else:
-                # self.train_writer = SummaryWriter(os.path.join(logdir, 'debug'), 'debug')
-                print("omitted")
+                self.train_writer = SummaryWriter(os.path.join(logdir, 'debug'), 'debug')
 
         self.load_model()
         self.load_param_groups()
@@ -467,7 +466,7 @@ class Processor():
         self.model.train()
         loader = self.data_loader['train']
         loss_values = []
-        # self.train_writer.add_scalar('epoch', epoch + 1, self.global_step)
+        self.train_writer.add_scalar('epoch', epoch + 1, self.global_step)
         self.record_time()
         timer = dict(dataloader=0.001, model=0.001, statistics=0.001)
 
@@ -523,9 +522,9 @@ class Processor():
                 value, predict_label = torch.max(output, 1)
                 acc = torch.mean((predict_label == batch_label).float())
 
-                # self.train_writer.add_scalar('acc', acc, self.global_step)
-                # self.train_writer.add_scalar('loss', loss.item() * splits, self.global_step)
-                # self.train_writer.add_scalar('loss_l1', l1, self.global_step)
+                self.train_writer.add_scalar('acc', acc, self.global_step)
+                self.train_writer.add_scalar('loss', loss.item() * splits, self.global_step)
+                self.train_writer.add_scalar('loss_l1', l1, self.global_step)
 
             #####################################
 
@@ -534,7 +533,7 @@ class Processor():
 
             # statistics
             self.lr = self.optimizer.param_groups[0]['lr']
-            # self.train_writer.add_scalar('lr', self.lr, self.global_step)
+            self.train_writer.add_scalar('lr', self.lr, self.global_step)
             timer['statistics'] += self.split_time()
 
             # Delete output/loss after each batch since it may introduce extra mem during scoping

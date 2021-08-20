@@ -63,15 +63,18 @@ class Feeder(Dataset):
             self.data = np.load(self.data_path, allow_pickle=True)
 
         expanded_label = []
+        self.sample_name = []
+        self.person_id = []
         for _, item in enumerate(self.label):
             for i in range(len(item['id_person'])):
                 expanded_label.append(item['id_action'])
+            self.person_id = self.person_id + item['id_person']
         self.label = expanded_label
 
         if self.debug:
-            self.label = self.label[0:100]
-            self.data = self.data[0:100]
-            self.sample_name = self.sample_name[0:100]
+            self.label = self.label[0:20]
+            self.data = self.data[0:20]
+            # self.sample_name = self.sample_name[0:100]
 
     def get_mean_map(self):
         data = self.data
