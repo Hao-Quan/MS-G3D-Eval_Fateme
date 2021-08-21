@@ -53,8 +53,6 @@ class Feeder(Dataset):
         #         self.sample_name, self.label = pickle.load(f, encoding='latin1')
 
         # robot dataset
-        f = open(self.label_path)
-        self.label = json.load(f)
 
         # load data
         if self.use_mmap:
@@ -62,19 +60,27 @@ class Feeder(Dataset):
         else:
             self.data = np.load(self.data_path, allow_pickle=True)
 
-        expanded_label = []
-        self.sample_name = []
-        self.person_id = []
-        for _, item in enumerate(self.label):
-            for i in range(len(item['id_person'])):
-                expanded_label.append(item['id_action'])
-            self.person_id = self.person_id + item['id_person']
-        self.label = expanded_label
+        f = open(self.label_path)
+        self.label = json.load(f)
+
+        ##### change data to format (N C T V M)  ######
+        self.data = np.vstack(self.data)
+        self.data = np.expand_dims(self.data, axis=4)
+        self.data = np.transpose(self.data, (0, 3, 1, 2, 4))
+
+        ##### build (sample_name, label) tuple ######
+        final_sample_name = []
+        final_label = []
+        for _, l_item in enumerate(self.label):
+            final_sample_name = final_sample_name + l_item['sample_name']
+            final_label = final_label + l_item['id_action']
+        self.label = final_label
+        self.sample_name = final_sample_name
 
         if self.debug:
             self.label = self.label[0:20]
             self.data = self.data[0:20]
-            # self.sample_name = self.sample_name[0:100]
+            self.sample_name = self.sample_name[0:20]
 
     def get_mean_map(self):
         data = self.data

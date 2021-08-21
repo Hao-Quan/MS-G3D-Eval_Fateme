@@ -245,6 +245,7 @@ class Processor():
                 self.val_writer = SummaryWriter(os.path.join(logdir, 'val'), 'val')
             else:
                 self.train_writer = SummaryWriter(os.path.join(logdir, 'debug'), 'debug')
+                self.val_writer = SummaryWriter(os.path.join(logdir, 'val'), 'val')
 
         self.load_model()
         self.load_param_groups()

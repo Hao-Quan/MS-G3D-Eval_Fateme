@@ -32,6 +32,8 @@ test_feeder_args:
   data_path: ./data/robot/X_global_data.npy
   label_path: ./data/robot/Y_global_data.json
 
+  debug: True
+
 # model
 model: model.msg3d.Model
 model_args:
