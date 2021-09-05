@@ -3,8 +3,8 @@ work_dir: ./work_dir/ntu/xsub/msg3d_joint
 # feeder
 feeder: feeders.feeder.Feeder
 train_feeder_args:
-  data_path: /data/robotic/train_data_joint_light.npy
-  label_path: /data/robotic/train_label_light.pkl
+  data_path: /data/robotic/train_data_joint.npy
+  label_path: /data/robotic/train_label.pkl
 
   debug: False
   random_choose: False
@@ -14,8 +14,8 @@ train_feeder_args:
   normalization: False
 
 test_feeder_args:
-  data_path: /data/robotic/val_data_joint_light.npy
-  label_path: /data/robotic/val_label_light.pkl
+  data_path: /data/robotic/val_data_joint.npy
+  label_path: /data/robotic/val_label.pkl
 
   debug: False
 
@@ -36,7 +36,7 @@ step: [30, 40]
 
 # training
 #num_epoch: 50
-num_epoch: 1
+num_epoch: 50
 device: [0,1]
 batch_size: 32
 forward_batch_size: 32

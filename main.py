@@ -390,8 +390,7 @@ class Processor():
             self.data_loader['train'] = torch.utils.data.DataLoader(
                 dataset=Feeder(**self.arg.train_feeder_args),
                 batch_size=self.arg.batch_size,
-                # shuffle=True,
-                shuffle=False,
+                shuffle=True,
                 num_workers=self.arg.num_worker,
                 drop_last=True,
                 worker_init_fn=worker_seed_fn
