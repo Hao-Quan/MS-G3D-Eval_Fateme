@@ -1,9 +1,9 @@
 # feeder
 feeder: feeders.feeder.Feeder
 test_feeder_args:
-  data_path: ./data/robot/X_global_data.npy
-  label_path: ./data/robot/Y_global_data.json
-  debug: True
+  data_path: /media/hao/My Passport/dataset/shopping_mall_robotic/val_data_joint_light.npy
+  label_path: /media/hao/My Passport/dataset/shopping_mall_robotic/val_label_light.pkl
+  debug: False
 
 # model
 model: model.msg3d.Model
@@ -19,8 +19,6 @@ model_args:
 phase: test
 device: [0]
 test_batch_size: 2
-weights: ./work_dir/weights/weights-1-25.pt
-#weights: ./pretrained_models/ntu120_xsub_joint.pt
+weights: ./work_dir/weights/weights-1-50.pt
 
-work_dir: ./eval/robot/
 save_score: True

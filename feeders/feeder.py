@@ -43,15 +43,13 @@ class Feeder(Dataset):
     def load_data(self):
 
         # NTU DATASET
-        # data: N C V T M
+        # data: N, C, T, V, M
         try:
             with open(self.label_path) as f:
-                # self.sample_name, self.label = pickle.load(f)
                 self.label, self.sample_name = pickle.load(f)
         except:
             # for pickle file from python2
             with open(self.label_path, 'rb') as f:
-                # self.sample_name, self.label = pickle.load(f, encoding='latin1')
                 self.label, self.sample_name, = pickle.load(f, encoding='latin1')
 
         # robot dataset
@@ -61,23 +59,6 @@ class Feeder(Dataset):
             self.data = np.load(self.data_path, mmap_mode='r')
         else:
             self.data = np.load(self.data_path, allow_pickle=True)
-
-        # f = open(self.label_path)
-        # self.label = json.load(f)
-        #
-        # ##### change data to format (N C T V M)  ######
-        # self.data = np.vstack(self.data)
-        # self.data = np.expand_dims(self.data, axis=4)
-        # self.data = np.transpose(self.data, (0, 3, 1, 2, 4))
-        #
-        # ##### build (sample_name, label) tuple ######
-        # final_sample_name = []
-        # final_label = []
-        # for _, l_item in enumerate(self.label):
-        #     final_sample_name = final_sample_name + l_item['sample_name']
-        #     final_label = final_label + l_item['id_action']
-        # self.label = final_label
-        # self.sample_name = final_sample_name
 
         if self.debug:
             self.label = self.label[0:20]
