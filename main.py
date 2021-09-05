@@ -403,7 +403,7 @@ class Processor():
             shuffle=False,
             num_workers=self.arg.num_worker,
             # drop_last=False,
-            drop_last=True,
+            drop_last=False,
             worker_init_fn=worker_seed_fn
             )
 

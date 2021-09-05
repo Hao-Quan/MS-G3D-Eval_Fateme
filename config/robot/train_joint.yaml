@@ -7,14 +7,13 @@ train_feeder_args:
 #  data_path: ./data/ntu/xsub/train_data_joint.npy
 #  label_path: ./data/ntu/xsub/train_label.pkl
 
-  data_path: ./data/robot/X_global_data.npy
-  label_path: ./data/robot/Y_global_data.json
-
-#  data_path: ./data/robot/X_format_NCTV.npy
-#  data_path: ./data/robot/X_format_NCTVM.npy
+#  data_path: ./data/robot/X_global_data.npy
 #  label_path: ./data/robot/Y_global_data.json
 
-  debug: True
+  data_path: /media/hao/My Passport/dataset/shopping_mall_robotic/train_data_joint_light.npy
+  label_path: /media/hao/My Passport/dataset/shopping_mall_robotic/train_label_light.pkl
+
+  debug: False
   random_choose: False
   random_shift: False
   random_move: False
@@ -25,14 +24,13 @@ test_feeder_args:
 #  data_path: ./data/ntu/xsub/val_data_joint.npy
 #  label_path: ./data/ntu/xsub/val_label.pkl
 
-#  data_path: ./data/robot/X_format_NCTV.npy
-#  data_path: ./data/robot/X_format_NCTVM.npy
+#  data_path: ./data/robot/X_global_data.npy
 #  label_path: ./data/robot/Y_global_data.json
 
-  data_path: ./data/robot/X_global_data.npy
-  label_path: ./data/robot/Y_global_data.json
+  data_path: /media/hao/My Passport/dataset/shopping_mall_robotic/val_data_joint_light.npy
+  label_path: /media/hao/My Passport/dataset/shopping_mall_robotic/val_label_light.pkl
 
-  debug: True
+  debug: False
 
 # model
 model: model.msg3d.Model
