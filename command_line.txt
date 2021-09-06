@@ -1,4 +1,7 @@
 LOCAL:
+
+--config ./config/robot/train_joint.yaml --work-dir work_dir/robot/ --phase train
+
 [test phase]
 python main.py
 --config ./config/robot/test_joint.yaml --work-dir ./eval/robot/ --phase test
