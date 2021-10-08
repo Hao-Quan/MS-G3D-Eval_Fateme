@@ -7,5 +7,13 @@ python main.py
 --config ./config/robot/test_joint.yaml --work-dir ./eval/robot/ --phase test
 
 REMOTE:
+    [train phase]
+
+--config config/robot/train_joint_remote.yaml --work-dir work_dir/robot_reduce_valid/ --phase train
+
+run-docker 2,3 33-35 python main.py --config config/robot/train_joint_remote.yaml --work-dir work_dir/robot_reduce_valid_crop/ --phase train
+
+
     [test phase]
---config ./config/robot/test_joint_remote.yaml --work-dir ./eval/robot/data_original --phase test
+run-docker 2,3 33-35 python main.py --config ./config/robot/test_joint_remote.yaml --work-dir ./eval/robot_reduce_valid --phase test
+
