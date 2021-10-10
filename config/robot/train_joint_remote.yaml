@@ -6,11 +6,11 @@ train_feeder_args:
 #  data_path: /data/robotic/train_data_joint.npy
 #  label_path: /data/robotic/train_label.pkl
 
-#  data_path: /data/robotic/data_reduce_valid/train_data_joint.npy
-#  label_path: /data/robotic/data_reduce_valid/train_label.pkl
+  data_path: /data/robotic/data_reduce_valid/train_data_joint.npy
+  label_path: /data/robotic/data_reduce_valid/train_label.pkl
 
-  data_path: /data/robotic/data_reduce_valid_crop/train_data_joint.npy
-  label_path: /data/robotic/data_reduce_valid_crop/train_label.pkl
+#  data_path: /data/robotic/data_reduce_valid_crop/train_data_joint.npy
+#  label_path: /data/robotic/data_reduce_valid_crop/train_label.pkl
 
   debug: False
   random_choose: False
@@ -23,14 +23,11 @@ test_feeder_args:
 #  data_path: /data/robotic/val_data_joint.npy
 #  label_path: /data/robotic/val_label.pkl
 
-#  data_path: /data/robotic/data_reduce_valid/val_data_joint.npy
-#  label_path: /data/robotic/data_reduce_valid/val_label.pkl
+  data_path: /data/robotic/data_reduce_valid/val_data_joint.npy
+  label_path: /data/robotic/data_reduce_valid/val_label.pkl
 
 #  data_path: /data/robotic/data_reduce_valid_crop/val_data_joint.npy
 #  label_path: /data/robotic/data_reduce_valid_crop/val_label.pkl
-
-  data_path: /data/robotic/data_reduce_valid_crop/val_data_joint.npy
-  label_path: /data/robotic/data_reduce_valid_crop/val_label.pkl
 
   debug: False
 
@@ -54,7 +51,7 @@ step: [30, 40]
 
 # training
 num_epoch: 100
-device: [0,1]
+device: [0,1,2]
 batch_size: 32
 forward_batch_size: 32
 test_batch_size: 32

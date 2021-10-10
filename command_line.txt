@@ -11,6 +11,8 @@ REMOTE:
 
 --config config/robot/train_joint_remote.yaml --work-dir work_dir/robot_reduce_valid/ --phase train
 
+run-docker 2,3 33-35 python main.py --config config/robot/train_joint_remote.yaml --work-dir work_dir/robot_reduce_valid/ --phase train
+
 run-docker 2,3 33-35 python main.py --config config/robot/train_joint_remote.yaml --work-dir work_dir/robot_reduce_valid_crop/ --phase train
 
 

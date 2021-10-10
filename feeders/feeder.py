@@ -142,6 +142,10 @@ class Feeder(Dataset):
         return sum(hit_top_k) * 1.0 / len(hit_top_k)
 
     def top_k_aggregate(self, score, top_k):
+
+        # FIRST LEVEL AGGREGATE
+        first_level_score = score
+        first_level_aggregate_label = self.label
         # sitting
         sitting_score = score[:, 7] + score[:, 8] + score[:, 9] + score[:, 10] + score[:, 11] + score[:, 12] + score[:, 13] + score[:, 14]
         # standing
@@ -151,16 +155,105 @@ class Feeder(Dataset):
         walking_score = score[:, 26] + score[:, 27] + score[:, 28] + score[:, 29] + score[:, 30] + score[:, 31] \
                          + score[:, 32] + score[:, 33] + score[:, 34] + score[:, 35] + score[:, 36]
 
-        # first_level_score = np.column_stack((sitting_score, standing_score, walking_score))
-        # first_level_rank = first_level_score.argsort()
+        first_level_score[:, 7] = sitting_score
+        first_level_score[:, 15] = standing_score
+        first_level_score[:, 26] = walking_score
 
-        score[:, 7] = sitting_score
-        score[:, 15] = standing_score
-        score[:, 26] = walking_score
+        first_level_rank = first_level_score.argsort()
 
-        rank = score.argsort()
-        hit_top_k = [l in rank[i, -top_k:] for i, l in enumerate(self.label)]
-        return sum(hit_top_k) * 1.0 / len(hit_top_k)
+        for k, la in enumerate(self.label):
+            if la == 8 or la == 9 or la == 10 or la == 11 or la == 12 or la == 13 or la == 14:
+                first_level_aggregate_label[k] = 7
+            elif la == 16 or la == 17 or la == 18 or la == 19 or la == 20 or la == 21 \
+                    or la == 22 or la == 23 or la == 24 or la == 25:
+                first_level_aggregate_label[k] = 15
+            elif la == 27 or la == 28 or la == 29 or la == 30 or la == 31 \
+                    or la == 32 or la == 33 or la == 34 or la == 35 or la == 36:
+                first_level_aggregate_label[k] = 26
+
+        hit_top_k_first_level = [l in first_level_rank[i, -top_k:] for i, l in enumerate(first_level_aggregate_label)]
+
+        # SECOND LEVEL AGGREGATE
+        # second_level_score = score
+        calling_score = score[:, 9] + score[:, 17] + score[:, 28]
+        drinking_score = score[:, 10] + score[:, 18] + score[:, 29]
+        eating_score = score[:, 11] + score[:, 19] + score[:, 30]
+        holdingBabyInArms_score = score[:, 12] + score[:, 20] + score[:, 31]
+        watchingPhone_score = score[:, 14] + score[:, 25] + score[:, 36]
+        #...
+
+        second_level_score = np.column_stack((calling_score, drinking_score, eating_score, holdingBabyInArms_score, watchingPhone_score))
+        second_level_max_arg = np.argmax(second_level_score, axis=1)
+        orig_max_arg = np.argmax(score, axis=1)
+        second_level_score_final = score
+
+        score_weight = 1000
+
+        for fl_i, fl_item in enumerate(hit_top_k_first_level):
+            # second level for "sittingXXX"
+            if fl_item == True  and  (orig_max_arg[fl_i] == 9 or orig_max_arg[fl_i] == 10 \
+                or orig_max_arg[fl_i] == 11 or orig_max_arg[fl_i] == 12 or orig_max_arg[fl_i] == 14):
+                if second_level_max_arg == 0:
+                    # -> sittingWhileCalling
+                    # value 1000 as constant to ensure sittingWhileCalling has the highest score
+                    second_level_score_final[fl_i][9] = second_level_score_final[fl_i][second_level_max_arg] + score_weight
+                elif second_level_max_arg == 1:
+                    # -> sittingWhileDrinking
+                    second_level_score_final[fl_i][10] = second_level_score_final[fl_i][second_level_max_arg] + score_weight
+                elif second_level_max_arg == 2:
+                    # -> sittingWhileEating
+                    second_level_score_final[fl_i][11] = second_level_score_final[fl_i][second_level_max_arg] + score_weight
+                elif second_level_max_arg == 3:
+                    # -> sittingWhileHoldingBabyInArms
+                    second_level_score_final[fl_i][12] = second_level_score_final[fl_i][second_level_max_arg] + score_weight
+                elif second_level_max_arg == 4:
+                    # -> sittingWhileWatchingPhone
+                    second_level_score_final[fl_i][14] = second_level_score_final[fl_i][second_level_max_arg] + score_weight
+
+            # second level for "standingXXX"
+            if fl_item == True  and  (orig_max_arg[fl_i] == 17 or orig_max_arg[fl_i] == 18 \
+                or orig_max_arg[fl_i] == 19 or orig_max_arg[fl_i] == 20 or orig_max_arg[fl_i] == 25):
+                if second_level_max_arg == 0:
+                    # -> standingWhileCalling
+                    # value 1000 as constant to ensure sittingWhileCalling has the highest score
+                    second_level_score_final[fl_i][17] = second_level_score_final[fl_i][second_level_max_arg] + score_weight
+                elif second_level_max_arg == 1:
+                    # -> standingWhileDrinking
+                    second_level_score_final[fl_i][18] = second_level_score_final[fl_i][second_level_max_arg] + score_weight
+                elif second_level_max_arg == 2:
+                    # -> standingWhileEating
+                    second_level_score_final[fl_i][19] = second_level_score_final[fl_i][second_level_max_arg] + score_weight
+                elif second_level_max_arg == 3:
+                    # -> standingWhileHoldingBabyInArms
+                    second_level_score_final[fl_i][20] = second_level_score_final[fl_i][second_level_max_arg] + score_weight
+                elif second_level_max_arg == 4:
+                    # -> standingWhileWatchingPhone
+                    second_level_score_final[fl_i][25] = second_level_score_final[fl_i][second_level_max_arg] + score_weight
+
+            # second level for "walkingXXX"
+            if fl_item == True  and  (orig_max_arg[fl_i] == 28 or orig_max_arg[fl_i] == 29 \
+                or orig_max_arg[fl_i] == 30 or orig_max_arg[fl_i] == 31 or orig_max_arg[fl_i] == 36):
+                if second_level_max_arg == 0:
+                    # -> walkingWhileCalling
+                    # value 1000 as constant to ensure sittingWhileCalling has the highest score
+                    second_level_score_final[fl_i][28] = second_level_score_final[fl_i][second_level_max_arg] + score_weight
+                elif second_level_max_arg == 1:
+                    # -> walkingWhileDrinking
+                    second_level_score_final[fl_i][29] = second_level_score_final[fl_i][second_level_max_arg] + score_weight
+                elif second_level_max_arg == 2:
+                    # -> walkingWhileEating
+                    second_level_score_final[fl_i][30] = second_level_score_final[fl_i][second_level_max_arg] + score_weight
+                elif second_level_max_arg == 3:
+                    # -> walkingWhileHoldingBabyInArms
+                    second_level_score_final[fl_i][31] = second_level_score_final[fl_i][second_level_max_arg] + score_weight
+                elif second_level_max_arg == 4:
+                    # -> walkingWhileWatchingPhone
+                    second_level_score_final[fl_i][36] = second_level_score_final[fl_i][second_level_max_arg] + score_weight
+
+        second_level_rank = second_level_score_final.argsort()
+        hit_top_k_second_level = [l in second_level_rank[i, -top_k:] for i, l in enumerate(self.label)]
+
+        return sum(hit_top_k_second_level) * 1.0 / len(hit_top_k_second_level)
 
 
 def import_class(name):
