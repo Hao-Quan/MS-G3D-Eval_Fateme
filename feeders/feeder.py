@@ -141,6 +141,27 @@ class Feeder(Dataset):
         hit_top_k = [l in rank[i, -top_k:] for i, l in enumerate(self.label)]
         return sum(hit_top_k) * 1.0 / len(hit_top_k)
 
+    def top_k_aggregate(self, score, top_k):
+        # sitting
+        sitting_score = score[:, 7] + score[:, 8] + score[:, 9] + score[:, 10] + score[:, 11] + score[:, 12] + score[:, 13] + score[:, 14]
+        # standing
+        standing_score = score[:, 15] + score[:, 16] + score[:, 17] + score[:, 18] + score[:, 19] + score[:, 20] \
+                         + score[:, 21] + score[:, 22] + score[:, 23] + score[:, 24] + score[:, 25]
+        # walking
+        walking_score = score[:, 26] + score[:, 27] + score[:, 28] + score[:, 29] + score[:, 30] + score[:, 31] \
+                         + score[:, 32] + score[:, 33] + score[:, 34] + score[:, 35] + score[:, 36]
+
+        # first_level_score = np.column_stack((sitting_score, standing_score, walking_score))
+        # first_level_rank = first_level_score.argsort()
+
+        score[:, 7] = sitting_score
+        score[:, 15] = standing_score
+        score[:, 26] = walking_score
+
+        rank = score.argsort()
+        hit_top_k = [l in rank[i, -top_k:] for i, l in enumerate(self.label)]
+        return sum(hit_top_k) * 1.0 / len(hit_top_k)
+
 
 def import_class(name):
     components = name.split('.')

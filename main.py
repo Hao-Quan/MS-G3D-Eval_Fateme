@@ -606,7 +606,10 @@ class Processor():
 
             score = np.concatenate(score_batches)
             loss = np.mean(loss_values)
-            accuracy = self.data_loader[ln].dataset.top_k(score, 1)
+            # Original
+            # accuracy = self.data_loader[ln].dataset.top_k(score, 1)
+            # new version
+            accuracy = self.data_loader[ln].dataset.top_k_aggregate(score, 1)
             if accuracy > self.best_acc:
                 self.best_acc = accuracy
                 self.best_acc_epoch = epoch + 1
