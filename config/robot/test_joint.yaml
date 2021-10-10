@@ -1,14 +1,15 @@
 # feeder
 feeder: feeders.feeder.Feeder
 test_feeder_args:
-  data_path: /media/hao/My Passport/dataset/shopping_mall_robotic/val_data_joint_light.npy
-  label_path: /media/hao/My Passport/dataset/shopping_mall_robotic/val_label_light.pkl
+  data_path: /media/hao/My Passport/dataset/shopping_mall_robotic/robot_reduce_valid_crop/val_data_joint_light.npy
+  label_path: /media/hao/My Passport/dataset/shopping_mall_robotic/robot_reduce_valid_crop/val_label_light.pkl
   debug: False
 
 # model
 model: model.msg3d.Model
 model_args:
-  num_class: 55
+#  num_class: 55
+  num_class: 37
   num_point: 17
   num_person: 1
   num_gcn_scales: 13    # `num_scales` == `K + 1` in the paper
@@ -18,8 +19,7 @@ model_args:
 # test
 phase: test
 device: [0]
-test_batch_size: 1
-weights: ./work_dir/weights/weights-42-280308.pt
-#weights: ./pretrained-models/kinetics-joint.pt
+test_batch_size: 2
+weights: ./work_dir/robot_reduce_valid_crop_local/weights/weights-1-50.pt
 
 save_score: True

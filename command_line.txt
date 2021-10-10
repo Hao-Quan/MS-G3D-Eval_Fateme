@@ -1,10 +1,10 @@
 LOCAL:
-
---config ./config/robot/train_joint.yaml --work-dir work_dir/robot/ --phase train
+    [train phase]
+--config ./config/robot/train_joint.yaml --work-dir work_dir/robot_reduce_valid_crop_local/ --phase train
 
     [test phase]
 python main.py
---config ./config/robot/test_joint.yaml --work-dir ./eval/robot/ --phase test
+--config ./config/robot/test_joint.yaml --work-dir ./eval/robot_reduce_valid_crop_local/ --phase test
 
 REMOTE:
     [train phase]
