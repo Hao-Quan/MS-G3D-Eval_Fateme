@@ -1,4 +1,4 @@
-work_dir: ./work_dir/robot/data_reduce_valid
+work_dir: ./work_dir/robot/data_reduce_valid_crop
 
 # feeder
 feeder: feeders.feeder.Feeder
