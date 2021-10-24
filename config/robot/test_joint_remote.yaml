@@ -26,6 +26,6 @@ phase: test
 device: [0,1]
 test_batch_size: 32
 #weights: ./work_dir/data_reduce_valid/weights/weights-44-224708.pt
-weights: ./work_dir/robot_reduce_valid_crop/weights/weights-27-38583.pt
+weights: ./work_dir/robot_reduce_valid_crop/weights/weights-41-58589.pt
 
 save_score: True

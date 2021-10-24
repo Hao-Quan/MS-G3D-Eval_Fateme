@@ -185,10 +185,12 @@ class Feeder(Dataset):
         eating_score = score[:, 11] + score[:, 19] + score[:, 30]
         holdingBabyInArms_score = score[:, 12] + score[:, 20] + score[:, 31]
         watchingPhone_score = score[:, 14] + score[:, 25] + score[:, 36]
-        #...TODO holding stroller / cart
+        holdingCart_score = score[:, 21] + score[:, 32]
+        holdingStroller_score = score[:, 22] + score[:, 33]
 
         # build second level score array
-        second_level_score = np.column_stack((calling_score, drinking_score, eating_score, holdingBabyInArms_score, watchingPhone_score))
+        second_level_score = np.column_stack((calling_score, drinking_score, eating_score, holdingBabyInArms_score,
+                                              watchingPhone_score, holdingCart_score, holdingStroller_score))
         # which is the highest score of the second level action
         second_level_max_arg = np.argmax(second_level_score, axis=1)
         # original prediction label index results
@@ -223,7 +225,8 @@ class Feeder(Dataset):
 
             # second level for "standingXXX"
             if fl_item == True  and  (orig_max_arg[fl_i] == 17 or orig_max_arg[fl_i] == 18 \
-                or orig_max_arg[fl_i] == 19 or orig_max_arg[fl_i] == 20 or orig_max_arg[fl_i] == 25):
+                or orig_max_arg[fl_i] == 19 or orig_max_arg[fl_i] == 20 or orig_max_arg[fl_i] == 21
+                or orig_max_arg[fl_i] == 22 or orig_max_arg[fl_i] == 25):
                 if second_level_max_arg == 0:
                     # -> standingWhileCalling
                     # value 1000 as constant to ensure standingWhileCalling has the highest score
@@ -240,10 +243,18 @@ class Feeder(Dataset):
                 elif second_level_max_arg == 4:
                     # -> standingWhileWatchingPhone
                     second_level_score_final[fl_i][25] = max(second_level_score_final[fl_i]) + score_weight
+                elif second_level_max_arg == 5:
+                    # -> standingWhileHoldingCart
+                    second_level_score_final[fl_i][21] = max(second_level_score_final[fl_i]) + score_weight
+                elif second_level_max_arg == 6:
+                    # -> standingWhileHoldingStroller
+                    second_level_score_final[fl_i][22] = max(second_level_score_final[fl_i]) + score_weight
 
             # second level for "walkingXXX"
             if fl_item == True  and  (orig_max_arg[fl_i] == 28 or orig_max_arg[fl_i] == 29 \
-                or orig_max_arg[fl_i] == 30 or orig_max_arg[fl_i] == 31 or orig_max_arg[fl_i] == 36):
+                or orig_max_arg[fl_i] == 30 or orig_max_arg[fl_i] == 31 or orig_max_arg[fl_i] == 32
+                or orig_max_arg[fl_i] == 33 or orig_max_arg[fl_i] == 36):
+
                 if second_level_max_arg == 0:
                     # -> walkingWhileCalling
                     # value 1000 as constant to ensure walkingWhileCalling has the highest score
@@ -260,6 +271,12 @@ class Feeder(Dataset):
                 elif second_level_max_arg == 4:
                     # -> walkingWhileWatchingPhone
                     second_level_score_final[fl_i][36] = max(second_level_score_final[fl_i]) + score_weight
+                elif second_level_max_arg == 5:
+                    # -> walkingWhileHoldingCart
+                    second_level_score_final[fl_i][32] = max(second_level_score_final[fl_i]) + score_weight
+                elif second_level_max_arg == 6:
+                    # -> walkingWhileHoldingStroller
+                    second_level_score_final[fl_i][33] = max(second_level_score_final[fl_i]) + score_weight
 
         # calculate aggregated score for 3 basic actions for the SECOND level
         # sitting
