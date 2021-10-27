@@ -1,11 +1,11 @@
 # feeder
 feeder: feeders.feeder.Feeder
 test_feeder_args:
-#  data_path: /data/robotic/data_reduce_valid/val_data_joint.npy
-#  label_path: /data/robotic/data_reduce_valid/val_label.pkl
+  data_path: /data/robotic/data_reduce_valid/val_data_joint.npy
+  label_path: /data/robotic/data_reduce_valid/val_label.pkl
 
-  data_path: /data/robotic/data_reduce_valid_crop/val_data_joint.npy
-  label_path: /data/robotic/data_reduce_valid_crop/val_label.pkl
+#  data_path: /data/robotic/data_reduce_valid_crop/val_data_joint.npy
+#  label_path: /data/robotic/data_reduce_valid_crop/val_label.pkl
   debug: False
 
 # model
