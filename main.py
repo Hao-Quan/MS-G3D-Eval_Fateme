@@ -608,7 +608,7 @@ class Processor():
             loss = np.mean(loss_values)
             # Original
             # accuracy = self.data_loader[ln].dataset.top_k(score, 1)
-            # new version
+            # new version for hierarchical classification
             accuracy = self.data_loader[ln].dataset.top_k_aggregate(score, 1)
             if accuracy > self.best_acc:
                 self.best_acc = accuracy
@@ -692,7 +692,7 @@ def main():
     p = parser.parse_args()
     if p.config is not None:
         with open(p.config, 'r') as f:
-            default_arg = yaml.load(f)
+            default_arg = yaml.safe_load(f)
         key = vars(p).keys()
         for k in default_arg.keys():
             if k not in key:
