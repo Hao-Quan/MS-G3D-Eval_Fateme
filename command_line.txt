@@ -4,7 +4,7 @@ LOCAL:
 
     [test phase]
 python main.py
---config ./config/robot/test_joint.yaml --work-dir ./eval/robot_reduce_valid_crop_local/ --phase test
+--config ./config/itw-s/test_joint.yaml --work-dir ./eval/reduce_valid_crop/ --phase test
 
 REMOTE:
     [train phase]
@@ -17,7 +17,7 @@ run-docker 2,3 33-35 python main.py --config config/robot/train_joint_remote.yam
 
 
 [test phase]
-run-docker 2 33-35 python main.py --config ./config/robot/test_joint_remote.yaml --work-dir ./eval/robot_reduce_valid --phase test
+run-docker 2 33-35 python main.py --config ./config/robot/test_joint_remote.yaml --work-dir ./eval/reduce_valid --phase test
 
-run-docker 2,3 33-35 python main.py --config ./config/robot/test_joint_remote.yaml --work-dir ./eval/robot_reduce_valid_crop --phase test
+run-docker 2 33-35 python main.py --config ./config/robot/test_joint_remote.yaml --work-dir ./eval/reduce_valid_crop --phase test
 

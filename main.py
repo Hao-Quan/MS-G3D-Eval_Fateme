@@ -21,7 +21,8 @@ from torch.optim.lr_scheduler import MultiStepLR
 # import apex
 
 from utils import count_params, import_class
-
+from sklearn.metrics import confusion_matrix
+import csv
 
 
 def init_seed(seed):
@@ -577,9 +578,12 @@ class Processor():
             for ln in loader_name:
                 loss_values = []
                 score_batches = []
+                label_list = []
+                pred_list = []
                 step = 0
                 process = tqdm(self.data_loader[ln], dynamic_ncols=True)
                 for batch_idx, (data, label, index) in enumerate(process):
+                    label_list.append(label)
                     data = data.float().cuda(self.output_device)
                     label = label.long().cuda(self.output_device)
                     output = self.model(data)
@@ -593,6 +597,7 @@ class Processor():
                     loss_values.append(loss.item())
 
                     _, predict_label = torch.max(output.data, 1)
+                    pred_list.append(predict_label.data.cpu().numpy())
                     step += 1
 
                     if wrong_file is not None or result_file is not None:
@@ -607,9 +612,10 @@ class Processor():
             score = np.concatenate(score_batches)
             loss = np.mean(loss_values)
             # Original
-            # accuracy = self.data_loader[ln].dataset.top_k(score, 1)
+            accuracy = self.data_loader[ln].dataset.top_k(score, 1)
             # new version for hierarchical classification
-            accuracy = self.data_loader[ln].dataset.top_k_aggregate(score, 1)
+            # accuracy = self.data_loader[ln].dataset.top_k_aggregate(score, 1)
+
             if accuracy > self.best_acc:
                 self.best_acc = accuracy
                 self.best_acc_epoch = epoch + 1
@@ -628,6 +634,27 @@ class Processor():
             if save_score:
                 with open('{}/epoch{}_{}_score.pkl'.format(self.arg.work_dir, epoch + 1, ln), 'wb') as f:
                     pickle.dump(score_dict, f)
+
+            # acc for each class:
+            label_list = np.concatenate(label_list)
+            pred_list = np.concatenate(pred_list)
+            # Only for aggregate version to generate new label and pred list, COMMENT IT when generate from original prediction
+            # label_list, pred_list = self.data_loader[ln].dataset.generate_aggregate_pred_label(score, 1)
+
+            confusion = confusion_matrix(label_list, pred_list)
+            list_diag = np.diag(confusion)
+            list_raw_sum = np.sum(confusion, axis=0)
+            each_acc = list_diag / list_raw_sum
+
+            mean_acc_per_class = np.nansum(each_acc) / np.count_nonzero(~np.isnan(each_acc))
+            self.print_log('\tMean Acc Per Class: {:.2f}%'.format(
+                100 * mean_acc_per_class))
+
+            with open('{}/epoch{}_{}_each_class_acc.csv'.format(self.arg.work_dir, epoch + 1, ln), 'w') as f:
+                writer = csv.writer(f)
+                writer.writerow([mean_acc_per_class])
+                writer.writerow(each_acc)
+                writer.writerows(confusion)
 
         # Empty cache after evaluation
         torch.cuda.empty_cache()

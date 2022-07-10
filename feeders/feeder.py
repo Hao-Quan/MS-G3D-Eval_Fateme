@@ -46,11 +46,13 @@ class Feeder(Dataset):
         # data: N, C, T, V, M
         try:
             with open(self.label_path) as f:
-                self.label, self.sample_name = pickle.load(f)
+                # self.label, self.sample_name, _ = pickle.load(f)
+                self.sample_name, self.label, _ = pickle.load(f)
         except:
             # for pickle file from python2
             with open(self.label_path, 'rb') as f:
-                self.label, self.sample_name, = pickle.load(f, encoding='latin1')
+                # self.label, self.sample_name, _ = pickle.load(f, encoding='latin1')
+                self.sample_name, self.label, _ = pickle.load(f, encoding='latin1')
 
         # robot dataset
 
@@ -206,20 +208,20 @@ class Feeder(Dataset):
             if fl_item == True  and  (orig_max_arg[fl_i] == 9 or orig_max_arg[fl_i] == 10 \
                 or orig_max_arg[fl_i] == 11 or orig_max_arg[fl_i] == 12 or orig_max_arg[fl_i] == 14):
 
-                if second_level_max_arg == 0:
+                if second_level_max_arg[fl_i] == 0:
                     # -> sittingWhileCalling
                     # the max score of each sample + value score_weight to ensure sittingWhileCalling has the highest score
                     second_level_score_final[fl_i][9] = max(second_level_score_final[fl_i]) + score_weight
-                elif second_level_max_arg == 1:
+                elif second_level_max_arg[fl_i] == 1:
                     # -> sittingWhileDrinking
                     second_level_score_final[fl_i][10] = max(second_level_score_final[fl_i]) + score_weight
-                elif second_level_max_arg == 2:
+                elif second_level_max_arg[fl_i] == 2:
                     # -> sittingWhileEating
                     second_level_score_final[fl_i][11] = max(second_level_score_final[fl_i]) + score_weight
-                elif second_level_max_arg == 3:
+                elif second_level_max_arg[fl_i] == 3:
                     # -> sittingWhileHoldingBabyInArms
                     second_level_score_final[fl_i][12] = max(second_level_score_final[fl_i]) + score_weight
-                elif second_level_max_arg == 4:
+                elif second_level_max_arg[fl_i] == 4:
                     # -> sittingWhileWatchingPhone
                     second_level_score_final[fl_i][14] = max(second_level_score_final[fl_i]) + score_weight
 
@@ -227,26 +229,26 @@ class Feeder(Dataset):
             if fl_item == True  and  (orig_max_arg[fl_i] == 17 or orig_max_arg[fl_i] == 18 \
                 or orig_max_arg[fl_i] == 19 or orig_max_arg[fl_i] == 20 or orig_max_arg[fl_i] == 21
                 or orig_max_arg[fl_i] == 22 or orig_max_arg[fl_i] == 25):
-                if second_level_max_arg == 0:
+                if second_level_max_arg[fl_i] == 0:
                     # -> standingWhileCalling
                     # value 1000 as constant to ensure standingWhileCalling has the highest score
                     second_level_score_final[fl_i][17] = max(second_level_score_final[fl_i]) + score_weight
-                elif second_level_max_arg == 1:
+                elif second_level_max_arg[fl_i] == 1:
                     # -> standingWhileDrinking
                     second_level_score_final[fl_i][18] = max(second_level_score_final[fl_i]) + score_weight
-                elif second_level_max_arg == 2:
+                elif second_level_max_arg[fl_i] == 2:
                     # -> standingWhileEating
                     second_level_score_final[fl_i][19] = max(second_level_score_final[fl_i]) + score_weight
-                elif second_level_max_arg == 3:
+                elif second_level_max_arg[fl_i] == 3:
                     # -> standingWhileHoldingBabyInArms
                     second_level_score_final[fl_i][20] = max(second_level_score_final[fl_i]) + score_weight
-                elif second_level_max_arg == 4:
+                elif second_level_max_arg[fl_i] == 4:
                     # -> standingWhileWatchingPhone
                     second_level_score_final[fl_i][25] = max(second_level_score_final[fl_i]) + score_weight
-                elif second_level_max_arg == 5:
+                elif second_level_max_arg[fl_i] == 5:
                     # -> standingWhileHoldingCart
                     second_level_score_final[fl_i][21] = max(second_level_score_final[fl_i]) + score_weight
-                elif second_level_max_arg == 6:
+                elif second_level_max_arg[fl_i] == 6:
                     # -> standingWhileHoldingStroller
                     second_level_score_final[fl_i][22] = max(second_level_score_final[fl_i]) + score_weight
 
@@ -255,26 +257,26 @@ class Feeder(Dataset):
                 or orig_max_arg[fl_i] == 30 or orig_max_arg[fl_i] == 31 or orig_max_arg[fl_i] == 32
                 or orig_max_arg[fl_i] == 33 or orig_max_arg[fl_i] == 36):
 
-                if second_level_max_arg == 0:
+                if second_level_max_arg[fl_i] == 0:
                     # -> walkingWhileCalling
                     # value 1000 as constant to ensure walkingWhileCalling has the highest score
                     second_level_score_final[fl_i][28] = max(second_level_score_final[fl_i]) + score_weight
-                elif second_level_max_arg == 1:
+                elif second_level_max_arg[fl_i] == 1:
                     # -> walkingWhileDrinking
                     second_level_score_final[fl_i][29] = max(second_level_score_final[fl_i]) + score_weight
-                elif second_level_max_arg == 2:
+                elif second_level_max_arg[fl_i] == 2:
                     # -> walkingWhileEating
                     second_level_score_final[fl_i][30] = max(second_level_score_final[fl_i]) + score_weight
-                elif second_level_max_arg == 3:
+                elif second_level_max_arg[fl_i] == 3:
                     # -> walkingWhileHoldingBabyInArms
                     second_level_score_final[fl_i][31] = max(second_level_score_final[fl_i]) + score_weight
-                elif second_level_max_arg == 4:
+                elif second_level_max_arg[fl_i] == 4:
                     # -> walkingWhileWatchingPhone
                     second_level_score_final[fl_i][36] = max(second_level_score_final[fl_i]) + score_weight
-                elif second_level_max_arg == 5:
+                elif second_level_max_arg[fl_i] == 5:
                     # -> walkingWhileHoldingCart
                     second_level_score_final[fl_i][32] = max(second_level_score_final[fl_i]) + score_weight
-                elif second_level_max_arg == 6:
+                elif second_level_max_arg[fl_i] == 6:
                     # -> walkingWhileHoldingStroller
                     second_level_score_final[fl_i][33] = max(second_level_score_final[fl_i]) + score_weight
 
