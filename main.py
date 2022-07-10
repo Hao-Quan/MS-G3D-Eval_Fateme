@@ -612,9 +612,9 @@ class Processor():
             score = np.concatenate(score_batches)
             loss = np.mean(loss_values)
             # Original
-            accuracy = self.data_loader[ln].dataset.top_k(score, 1)
+            # accuracy = self.data_loader[ln].dataset.top_k(score, 1)
             # new version for hierarchical classification
-            # accuracy = self.data_loader[ln].dataset.top_k_aggregate(score, 1)
+            accuracy = self.data_loader[ln].dataset.top_k_aggregate(score, 1)
 
             if accuracy > self.best_acc:
                 self.best_acc = accuracy
@@ -629,7 +629,8 @@ class Processor():
             score_dict = dict(zip(self.data_loader[ln].dataset.sample_name, score))
             self.print_log(f'\tMean {ln} loss of {len(self.data_loader[ln])} batches: {np.mean(loss_values)}.')
             for k in self.arg.show_topk:
-                self.print_log(f'\tTop {k}: {100 * self.data_loader[ln].dataset.top_k(score, k):.2f}%')
+                # self.print_log(f'\tTop {k}: {100 * self.data_loader[ln].dataset.top_k(score, k):.2f}%')
+                self.print_log(f'\tTop {k}: {100 * self.data_loader[ln].dataset.top_k_aggregate(score, k):.2f}%')
 
             if save_score:
                 with open('{}/epoch{}_{}_score.pkl'.format(self.arg.work_dir, epoch + 1, ln), 'wb') as f:
@@ -639,7 +640,7 @@ class Processor():
             label_list = np.concatenate(label_list)
             pred_list = np.concatenate(pred_list)
             # Only for aggregate version to generate new label and pred list, COMMENT IT when generate from original prediction
-            # label_list, pred_list = self.data_loader[ln].dataset.generate_aggregate_pred_label(score, 1)
+            label_list, pred_list = self.data_loader[ln].dataset.generate_aggregate_pred_label(score, 1)
 
             confusion = confusion_matrix(label_list, pred_list)
             list_diag = np.diag(confusion)
