@@ -10,8 +10,11 @@ train_feeder_args:
 #  data_path: ./data/robot/X_global_data.npy
 #  label_path: ./data/robot/Y_global_data.json
 
-  data_path: /media/hao/My Passport/dataset/shopping_mall_robotic/robot_reduce_valid_crop/train_data_joint_light.npy
-  label_path: /media/hao/My Passport/dataset/shopping_mall_robotic/robot_reduce_valid_crop/train_label_light.pkl
+#  data_path: /media/hao/My Passport/dataset/shopping_mall_robotic/robot_reduce_valid_crop/train_data_joint_light.npy
+#  label_path: /media/hao/My Passport/dataset/shopping_mall_robotic/robot_reduce_valid_crop/train_label_light.pkl
+
+  data_path: "/media/hao/Seagate Basic1/dataset/itw-s/data_reduce_valid/train_data_joint_light.npy"
+  label_path: "/media/hao/Seagate Basic1/dataset/itw-s/data_reduce_valid/train_label_light.pkl"
 
   debug: False
   random_choose: False
@@ -27,8 +30,11 @@ test_feeder_args:
 #  data_path: ./data/robot/X_global_data.npy
 #  label_path: ./data/robot/Y_global_data.json
 
-  data_path: /media/hao/My Passport/dataset/shopping_mall_robotic/robot_reduce_valid_crop/val_data_joint_light.npy
-  label_path: /media/hao/My Passport/dataset/shopping_mall_robotic/robot_reduce_valid_crop/val_label_light.pkl
+#  data_path: /media/hao/My Passport/dataset/shopping_mall_robotic/robot_reduce_valid_crop/val_data_joint_light.npy
+#  label_path: /media/hao/My Passport/dataset/shopping_mall_robotic/robot_reduce_valid_crop/val_label_light.pkl
+
+  data_path: "/media/hao/Seagate Basic1/dataset/itw-s/data_reduce_valid/val_data_joint_light.npy"
+  label_path: "/media/hao/Seagate Basic1/dataset/itw-s/data_reduce_valid/val_label_light.pkl"
 
   debug: False
 

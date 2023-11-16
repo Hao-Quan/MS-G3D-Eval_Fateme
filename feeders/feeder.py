@@ -51,8 +51,8 @@ class Feeder(Dataset):
         except:
             # for pickle file from python2
             with open(self.label_path, 'rb') as f:
-                # self.label, self.sample_name, _ = pickle.load(f, encoding='latin1')
-                self.sample_name, self.label, _ = pickle.load(f, encoding='latin1')
+                self.label, self.sample_name = pickle.load(f, encoding='latin1')
+                # self.sample_name, self.label, _ = pickle.load(f, encoding='latin1')
 
         # robot dataset
 
