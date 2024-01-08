@@ -481,6 +481,9 @@ class Processor():
             with torch.no_grad():
                 data = data.float().cuda(self.output_device)
                 label = label.long().cuda(self.output_device)
+                # print(type(label))
+                # print(label)
+                # label = label.cuda(self.output_device)
             timer['dataloader'] += self.split_time()
 
             # backward
@@ -644,7 +647,7 @@ class Processor():
 
             confusion = confusion_matrix(label_list, pred_list)
             list_diag = np.diag(confusion)
-            list_raw_sum = np.sum(confusion, axis=0)
+            list_raw_sum = np.sum(confusion, axis=1)
             each_acc = list_diag / list_raw_sum
 
             mean_acc_per_class = np.nansum(each_acc) / np.count_nonzero(~np.isnan(each_acc))
